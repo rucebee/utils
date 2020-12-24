@@ -1,3 +1,6 @@
+const NOOP = () => {
+}
+
 export function animate(draw, duration, timing = timeFraction => timeFraction) {
     let progress = 0, animateId, _reject
 
@@ -47,14 +50,14 @@ export function range(a, b, fn) {
     }
 }
 
-export function timeout(duration) {
+export function timeout(duration, complete) {
     let timerId, _reject
 
-    const promise = new Promise((resolve, reject) => {
+    const promise = duration ? new Promise((resolve, reject) => {
         _reject = reject
 
         timerId = setTimeout(resolve, duration)
-    })
+    }) : Promise.resolve()
 
     promise.stop = (silent = false) => {
         if (timerId) {
@@ -65,5 +68,46 @@ export function timeout(duration) {
         }
     }
 
+    if (complete)
+        promise.then(complete, complete)
+
     return promise
+}
+
+export function CriticalSection() {
+    let point = Promise.resolve()
+
+    this.enter = async () => {
+        const _point = point
+        let _resolve
+        point = new Promise(resolve => {
+            _resolve = resolve
+        })
+
+        await _point
+
+        return _resolve
+    }
+
+    this.exec = async fn => {
+        const leave = await this.enter()
+        try {
+            await fn()
+        } finally {
+            leave()
+        }
+    }
+}
+
+export function is_iOS() {
+    return [
+            'iPad Simulator',
+            'iPhone Simulator',
+            'iPod Simulator',
+            'iPad',
+            'iPhone',
+            'iPod'
+        ].includes(navigator.platform)
+        // iPad on iOS 13 detection
+        || (navigator.userAgent.includes('Mac') && 'ontouchend' in document)
 }
