@@ -1,8 +1,7 @@
 {
   "name": "@rucebee/utils",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Utils",
-  "main": "src/index.js",
   "scripts": {
     "build": "babel src -d dist",
     "test": "echo \"Error: no test specified\" && exit 1"
