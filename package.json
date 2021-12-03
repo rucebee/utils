@@ -3,7 +3,7 @@
   "version": "1.0.1",
   "description": "Utils",
   "scripts": {
-    "build": "babel src -d dist",
+    "build": "rm -f *.js && babel src -d .",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "rucebee",
