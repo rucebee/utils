@@ -1,6 +1,6 @@
 {
   "name": "@rucebee/utils",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Utils",
   "scripts": {
     "build": "rm -f *.js && babel src -d .",
