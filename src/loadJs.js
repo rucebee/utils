@@ -1,35 +1,37 @@
-export default function (src, cbName, uid) {
+export default function (src, cbName, id) {
   return new Promise((resolve, reject) => {
     let shouldAppend = false
     let el = document.querySelector('script[src="' + src + '"]')
+
     if (!el) {
       el = document.createElement('script')
       el.type = 'text/javascript'
       el.async = true
       el.src = src
 
-      if (uid) {
-        const unique = document.querySelector('script[data-uid="' + uid + '"]')
-        if (unique)
-          unique.remove()
+      if (id) {
+        const unique = document.getElementById(id)
+        if (unique) unique.remove()
 
-        el.setAttribute('data-uid', uid)
+        el.id = id
       }
 
-      if (cbName)
+      if (cbName) {
         window[cbName] = function (...args) {
           delete window[cbName]
 
           const ev = new Event('callback')
-          if (args.length > 1 || args.length === 1 && args[0] !== undefined)
+          if (args.length > 1 || args.length === 1 && args[0] !== undefined) {
             ev.dataArray = args
+          }
 
           el.dispatchEvent(ev)
         }
+      }
 
       shouldAppend = true
     } else if (el.hasAttribute('data-resolved')) {
-      el.dataArray ? resolve(...el.dataArray) : resolve
+      el.dataArray ? resolve(...el.dataArray) : resolve()
 
       return
     }
@@ -62,7 +64,8 @@ export default function (src, cbName, uid) {
     el.addEventListener('abort', _reject)
     el.addEventListener(cbName ? 'callback' : 'load', _resolve)
 
-    if (shouldAppend)
+    if (shouldAppend) {
       document.head.appendChild(el)
+    }
   })
 }
